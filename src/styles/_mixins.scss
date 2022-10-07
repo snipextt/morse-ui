@@ -1,0 +1,10 @@
+@mixin centered-children {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin stack {
+  display: flex;
+  flex-direction: column;
+}
