@@ -2,6 +2,9 @@ import { Avatar, Comment, List } from "antd";
 import { useState } from "react";
 import Editor from "./Editor";
 import moment from "moment";
+import { useQuery } from "@tanstack/react-query";
+import { getUserProfile } from "../lib/profile";
+import { createCommentOnPost } from "../lib/post";
 
 interface CommentItem {
   author: string;
@@ -13,26 +16,29 @@ interface CommentItem {
 const CommentList = ({ comments }: { comments: CommentItem[] }) => (
   <List
     dataSource={comments}
-    header={`${comments.length} ${comments.length > 1 ? "replies" : "reply"}`}
     itemLayout="horizontal"
     renderItem={(props) => <Comment {...props} />}
   />
 );
 
-const CommentBoxWidget = () => {
+const CommentBoxWidget = ({ postId }: any) => {
   const [comments, setComments] = useState<CommentItem[]>([]);
+  const { data } = useQuery(["profile", null], getUserProfile, {
+    retry: false,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [value, setValue] = useState<string>("");
   const handleChange = (e: any) => {
     setValue(e);
   };
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!value) return;
     setSubmitting(true);
+    await createCommentOnPost(postId, value);
     setComments((prevComments) => [
       {
-        author: "Han Solo",
-        avatar: "https://joeschmoe.io/api/v1/random",
+        author: data.user.username,
+        avatar: data.user.profilePicture,
         content: <p>{value}</p>,
         datetime: moment().fromNow(),
       },

@@ -18,7 +18,7 @@ const Editor = ({ onChange, onSubmit, submitting, value }: EditorProps) => (
         borderRadius: 0,
         width: "90%",
       }}
-      autoSize
+      onPressEnter={onSubmit}
       onChange={onChange}
       value={value}
     >

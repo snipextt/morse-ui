@@ -10,12 +10,18 @@ import { Socket } from "socket.io-client";
 import { SocketEvents } from "../constants";
 import messagesState from "../state/messages";
 import { Message } from "../schema/Message";
+import { useQuery } from "@tanstack/react-query";
+import { getUserProfile } from "../lib/profile";
 
 const Layout = () => {
   const { token } = useAuthState();
   const navigate = useNavigate();
   const [rooms, setRooms] = useRecoilState(userRoomsState);
   const [messages, setMessages] = useRecoilState(messagesState);
+  const { status, data: userData } = useQuery(
+    ["profile", null],
+    getUserProfile
+  );
 
   useEffect(() => {
     if (!token) navigate("/login");
@@ -130,6 +136,15 @@ const Layout = () => {
       });
     }
   }, [token]);
+
+  useEffect(() => {
+    if (userData) {
+      if (userData.user.onBoardingState === "onBoarding") {
+        navigate("/onboarding");
+      }
+      console.log(userData);
+    }
+  }, [userData]);
   return (
     <Space direction="vertical" size="large" style={{ display: "flex" }}>
       <Header />

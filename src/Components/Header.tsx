@@ -20,6 +20,7 @@ import { User } from "../schema/User";
 import { DefaultOptionType } from "antd/lib/select";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile, searchUsername } from "../lib/profile";
+import AddPostWidget from "./AddPostWidget";
 
 const ProfileMenu = () => {
   return (
@@ -47,6 +48,7 @@ const Header = () => {
   const [searchValue, setSearchValue] = useState("");
   const debounceRef = useRef<number>();
   const { data: userData } = useQuery(["profile", null], getUserProfile);
+  const [addPostModalOpen, setAddPostModalOpen] = useState(false);
 
   const { data, status } = useQuery(
     ["search", searchValue],
@@ -122,6 +124,7 @@ const Header = () => {
           }}
         />
         <PlusCircleOutlined
+          onClick={() => setAddPostModalOpen(true)}
           style={{ fontSize: "24px", color: "#8f8f8f", cursor: "pointer" }}
         />
         <Dropdown
@@ -147,6 +150,10 @@ const Header = () => {
           />
         </Dropdown>
       </Space>
+      <AddPostWidget
+        modalOpen={addPostModalOpen}
+        closeModal={() => setAddPostModalOpen(false)}
+      />
     </div>
   );
 };

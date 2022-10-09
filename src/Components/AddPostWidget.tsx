@@ -2,17 +2,19 @@ import { Input, Modal, Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { UploadChangeParam, UploadFile } from "antd/lib/upload";
 import { useState } from "react";
-import { addStory } from "../lib/story";
+import { addPost } from "../lib/profile";
 import toast from "react-hot-toast";
 
-const AddStoryWidget = ({ modalOpen, closeModal }: any) => {
-  const [selectedFiletype, setSelectedFiletype] = useState<string | null>(null);
+const AddPostWidget = ({ modalOpen, closeModal }: any) => {
   const [selectedFileSrc, setSelectedFileSrc] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [caption, setCaption] = useState<string | null>(null);
   const onFileSelect = (info: UploadChangeParam<UploadFile<any>>) => {
-    const selectedFiledtype = info.file.type!.split("/")[0];
-    setSelectedFiletype(selectedFiledtype);
+    if (info.file.status === "removed") {
+      setSelectedFileSrc(null);
+      setSelectedFile(null);
+      return;
+    }
     setSelectedFile(info.file.originFileObj!);
     const fileReader = new FileReader();
     fileReader.readAsDataURL(info.file.originFileObj!);
@@ -21,18 +23,17 @@ const AddStoryWidget = ({ modalOpen, closeModal }: any) => {
     };
   };
 
-  const postStory = async () => {
+  const createPost = async () => {
     try {
-      await addStory({
-        media: selectedFile,
+      await addPost({
+        image: selectedFile,
         caption,
       });
       closeModal();
-      toast.success("Story added successfully");
+      toast.success("Post added successfully");
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Something went wrong");
     } finally {
-      setSelectedFiletype(null);
       setSelectedFileSrc(null);
       setSelectedFile(null);
       setCaption(null);
@@ -41,18 +42,24 @@ const AddStoryWidget = ({ modalOpen, closeModal }: any) => {
 
   return (
     <Modal
-      title={<div style={{ textAlign: "center" }}>Add story</div>}
+      title={<div style={{ textAlign: "center" }}>Add Post</div>}
       centered
       width={700}
       closable={false}
       open={modalOpen}
       okText="Confirm"
       cancelText="Cancel"
-      onOk={postStory}
       onCancel={closeModal}
+      onOk={createPost}
+      destroyOnClose={true}
     >
-      {!selectedFiletype && (
-        <Upload className="upload" onChange={onFileSelect}>
+      <Upload
+        className="upload"
+        onChange={onFileSelect}
+        accept="image/*"
+        maxCount={1}
+      >
+        {!selectedFile && (
           <div
             style={{
               width: "100%",
@@ -74,44 +81,24 @@ const AddStoryWidget = ({ modalOpen, closeModal }: any) => {
             />
             <div style={{ marginTop: 8 }}>Upload</div>
           </div>
-        </Upload>
-      )}
-      {selectedFiletype && (
-        <>
-          {selectedFiletype === "image" && (
-            <img
-              src={selectedFileSrc!}
-              style={{
-                width: "100%",
-                height: "350px",
-              }}
-            />
-          )}
-          {selectedFiletype === "video" && (
-            <video
-              src={selectedFileSrc!}
-              style={{
-                width: "100%",
-                height: "350px",
-              }}
-              controls={false}
-              autoPlay
-              muted
-              loop
-            />
-          )}
-          <Input
-            style={{
-              marginTop: 16,
-            }}
-            size="large"
-            placeholder="Write a caption..."
-            onChange={(e) => setCaption(e.target.value)}
+        )}
+        {selectedFileSrc && (
+          <img
+            src={selectedFileSrc}
+            style={{ width: "100%", height: "350px", objectFit: "cover" }}
           />
-        </>
-      )}
+        )}
+      </Upload>
+      <Input.TextArea
+        placeholder="what's happening?"
+        onChange={(e) => setCaption(e.target.value)}
+        style={{
+          marginTop: 16,
+        }}
+        autoSize={{ minRows: 3, maxRows: 5 }}
+      ></Input.TextArea>
     </Modal>
   );
 };
 
-export default AddStoryWidget;
+export default AddPostWidget;

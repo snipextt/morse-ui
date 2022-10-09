@@ -15,6 +15,7 @@ import Layout from "./Components/Layout";
 import Profile from "./Pages/Profile";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { RecoilRoot } from "recoil";
+import Post from "./Pages/Post";
 
 const queryClient = new QueryClient();
 
@@ -29,15 +30,17 @@ function App() {
             <Route index element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="onboarding" element={<Onboarding />} />
             <Route path="/app" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="messages" element={<Messages />} />
-              <Route path="onboarding" element={<Onboarding />} />
               <Route path="profile">
                 <Route index element={<Profile />} />
                 <Route path=":id" element={<Profile />} />
               </Route>
+              <Route path="post/:id" element={<Post />} />
             </Route>
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>

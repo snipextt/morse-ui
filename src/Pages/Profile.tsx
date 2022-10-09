@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import EditProfileWidget from "../Components/EditProfileWidget";
+import PostCard from "../Components/PostCard";
 import Spinner from "../Components/Spinner";
 import {
   followUserProfile,
+  getPostsForUser,
   getUserProfile,
   unfollowUserProfile,
 } from "../lib/profile";
@@ -28,6 +31,10 @@ const Profile = () => {
   const { status, data } = useQuery(["profile", params.id], getUserProfile, {
     retry: false,
   });
+  const { data: userPosts } = useQuery(["posts", params.id], getPostsForUser, {
+    retry: false,
+  });
+  const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
   const navigate = useNavigate();
   const [rooms] = useRecoilState(userRoomsState);
 
@@ -139,6 +146,7 @@ const Profile = () => {
           style={{
             width: "350px",
           }}
+          onClick={() => setEditProfileModalOpen(true)}
         >
           Edit Profile
         </Button>
@@ -158,7 +166,7 @@ const Profile = () => {
           ? `No follower`
           : `${userData?.followers?.length} ${
               (userData?.followers?.length || 0) > 1 ? "followers" : "follower"
-            }${followingUserProfile ? ", you follow them" : ""}`}
+            }${followingUserProfile ? ", followed by you" : ""}`}
       </Typography.Text>
       <Typography.Text>
         {userData?.followings?.length === 0
@@ -167,7 +175,7 @@ const Profile = () => {
               (userData?.followings?.length || 0) > 1
                 ? "followings"
                 : "following"
-            }${isBeingFollowedByUser ? ", they follow you" : ""}`}
+            }${isBeingFollowedByUser ? ", follows you" : ""}`}
       </Typography.Text>
       <Typography.Text
         style={{
@@ -185,35 +193,26 @@ const Profile = () => {
           rowGap: "1rem",
         }}
       >
-        <Col xs={24} md={12} lg={8} xxl={6}>
-          <img
-            src="https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-            style={{ maxWidth: "100%", minHeight: "100%", objectFit: "cover" }}
-            alt=""
-          />
-        </Col>
-        <Col xs={24} md={12} lg={8} xxl={6}>
-          <img
-            src="https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-            style={{ maxWidth: "100%", minHeight: "100%", objectFit: "cover" }}
-            alt=""
-          />
-        </Col>
-        <Col xs={24} md={12} lg={8} xxl={6}>
-          <img
-            src="https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-            style={{ maxWidth: "100%", minHeight: "100%", objectFit: "cover" }}
-            alt=""
-          />
-        </Col>
-        <Col xs={24} md={12} lg={8} xxl={6}>
-          <img
-            src="https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=60"
-            style={{ maxWidth: "100%", minHeight: "100%", objectFit: "cover" }}
-            alt=""
-          />
-        </Col>
+        {(userPosts?.posts.length || 0) === 0 && (
+          <Col xs={24}>
+            <Typography.Title
+              style={{
+                textAlign: "center",
+              }}
+              level={4}
+            >
+              No posts to show
+            </Typography.Title>
+          </Col>
+        )}
+        {userPosts?.posts?.map((post: any, index: number) => (
+          <PostCard key={index} post={post} />
+        ))}
       </Row>
+      <EditProfileWidget
+        open={editProfileModalOpen}
+        setOpen={setEditProfileModalOpen}
+      />
     </div>
   );
 };

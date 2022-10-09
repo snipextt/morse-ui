@@ -5,27 +5,51 @@ import {
   HeartFilled,
   UserOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostComment from "./PostComment";
 import CommentBoxWidget from "./CommentBoxWidget";
+import { useAuthState } from "../utils/auth";
+import moment from "moment";
+import { Link } from "react-router-dom";
 
-const Post = () => {
+const Post = ({ imageUrl, _id, user, likes, createdAt, caption }: any) => {
+  const { userId } = useAuthState();
   const [isLiked, setIsLiked] = useState(false);
 
   const toggleLike = () => {
     setIsLiked(!isLiked);
   };
 
+  useEffect(() => {
+    setIsLiked(likes.some((like: string) => like === userId));
+  }, []);
+
   return (
     <div className="post">
       <div className="post-header">
-        <Avatar icon={<UserOutlined />} />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Avatar src={user?.profilePicture} />
+          &nbsp;&nbsp;
+          <div
+            style={{
+              display: "inline-flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography.Text strong>{user?.username}</Typography.Text>
+            <Typography.Text type="secondary">
+              {moment(createdAt).format("MMMM Do YYYY h:mm a")}
+            </Typography.Text>
+          </div>
+        </div>
       </div>
       <div className="post-body">
-        <img
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-          alt=""
-        />
+        <img src={imageUrl} alt="" />
       </div>
       <div className="post-footer">
         <Space
@@ -43,41 +67,27 @@ const Post = () => {
               style={{ fontSize: "24px", cursor: "pointer" }}
             />
           )}
-          <Typography.Paragraph style={{ margin: 0 }}>
-            You and 99999 other like this
-          </Typography.Paragraph>
+          {likes?.length === 0 && (
+            <Typography.Text type="secondary">No likes yet</Typography.Text>
+          )}
+          {likes?.length > 0 && (
+            <Typography.Paragraph style={{ margin: 0 }}>
+              {isLiked ? "You " : ""}{" "}
+              {likes?.length > 1
+                ? `${likes?.length - 1} ${
+                    likes?.length - 1 === 1 ? "person" : "people"
+                  } liked `
+                : `liked `}
+              this
+            </Typography.Paragraph>
+          )}
         </Space>
         <Typography.Paragraph style={{ margin: "8px 0" }}>
-          <span style={{ fontWeight: 500 }}>username</span> Lorem ipsum
+          {caption}
         </Typography.Paragraph>
-        <Space size={6} style={{ display: "flex", flexWrap: "wrap" }}>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-          <Typography.Link>#tag</Typography.Link>
-        </Space>
-        <CommentBoxWidget />
+        <CommentBoxWidget postId={_id} />
         <Typography.Link style={{ margin: "8px 0" }}>
-          view all comments
+          <Link to={`/app/post/${_id}#comments`}>view all comments</Link>
         </Typography.Link>
       </div>
     </div>
