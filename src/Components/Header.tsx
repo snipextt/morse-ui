@@ -21,8 +21,21 @@ import { DefaultOptionType } from "antd/lib/select";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile, searchUsername } from "../lib/profile";
 import AddPostWidget from "./AddPostWidget";
+import { useAuthState } from "../utils/auth";
 
 const ProfileMenu = () => {
+  const { setAuthState } = useAuthState();
+  const navigate = useNavigate();
+  const logout = () => {
+    setAuthState(
+      {
+        token: "",
+        userId: "",
+      },
+      true
+    );
+    navigate("/login");
+  };
   return (
     <Menu
       items={[
@@ -34,7 +47,7 @@ const ProfileMenu = () => {
           type: "divider",
         },
         {
-          label: "logout",
+          label: <div onClick={logout}>Logout</div>,
           key: "1",
         },
       ]}
@@ -143,7 +156,7 @@ const Header = () => {
           onClick={() => navigate("/app/messages")}
           style={{ fontSize: "24px", color: "#8f8f8f", cursor: "pointer" }}
         />
-        <Dropdown overlay={ProfileMenu} trigger={["click"]}>
+        <Dropdown overlay={<ProfileMenu />} trigger={["click"]}>
           <Avatar
             src={userData?.user?.profilePicture}
             style={{ cursor: "pointer", border: "1px solid #e6e6e6" }}
