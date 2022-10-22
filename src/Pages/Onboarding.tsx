@@ -155,7 +155,7 @@ const Onboarding = () => {
   }, [data]);
 
   const formSubmit = async (values: any) => {
-    if (current === 1) {
+    if (current === 0) {
       values.onBoardingState = "completed";
       values.profilePicture = "https://joeschmoe.io/api/v1/" + selectedAvatar;
     }
@@ -179,7 +179,7 @@ const Onboarding = () => {
           }}
         >
           <Steps current={current}>
-            <Step title="Academic Details" icon={<SolutionOutlined />} />
+            {/* <Step title="Academic Details" icon={<SolutionOutlined />} /> */}
             <Step title="Personal Details" icon={<UserOutlined />} />
             <Step title="Done" icon={<SmileOutlined />} />
           </Steps>
@@ -188,7 +188,7 @@ const Onboarding = () => {
               marginTop: "25px",
             }}
           >
-            {current === 0 && (
+            {/* {current === 0 && (
               <Form
                 form={academicDetailsForm}
                 layout="vertical"
@@ -249,8 +249,8 @@ const Onboarding = () => {
                   </Button>
                 </Form.Item>
               </Form>
-            )}
-            {current === 1 && (
+            )} */}
+            {current === 0 && (
               <>
                 <div
                   style={{
@@ -344,7 +344,7 @@ const Onboarding = () => {
                 </Form>
               </>
             )}
-            {current === 2 && (
+            {current === 1 && (
               <Result
                 icon={<SmileOutlined />}
                 title="Great, Your account has been created!"

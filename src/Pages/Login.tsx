@@ -53,9 +53,11 @@ const Login = () => {
           <Form.Item name="remember" valuePropName="checked" noStyle>
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
-
-          <a className="login-form-forgot" href="">
-            Forgot password
+          <a
+            onClick={() => navigate("/register")}
+            className="login-form-forgot"
+          >
+            new user?
           </a>
         </Form.Item>
 
