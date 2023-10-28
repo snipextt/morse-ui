@@ -1,6 +1,6 @@
 ## Deploment
 
-https://morse-ui.vercel.app/
+https://morse-ui.vercel.app/ (does not work anymore ⚠️)
 
 ## Backend
 
